@@ -1,52 +1,28 @@
-import React, { useRef, useLayoutEffect, useState, memo } from "react";
-import { Modal, Button, Form, Select, Input, Row, Col, DatePicker } from "antd";
-import { AvField, AvForm } from "availity-reactstrap-validation";
-import { Card, CardBody, Container, ModalBody, ModalHeader } from "reactstrap";
+import React, { memo } from "react";
+import { Modal, Button, Form, Select, Input, Row, DatePicker } from "antd";
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-function ModalComponent({
-  openModal,
-
-  toggle,
-  isEdit,
-  onFinish,
-  handleValidEventSubmit,
-  event,
-  setDeleteModal,
-  form,
-}) {
-  const { id, title, className, start, end, startStr, endStr, rangeTime } =
-    event;
-
+function ModalComponent({ openModal, toggle, isEdit, onFinish, form }) {
   const rangeConfig = {
     rules: [
       {
         type: "array",
         required: true,
-        message: "Please select time!",
+        message: "Please select Day!",
       },
     ],
   };
 
-  console.log("rangeTime>>>", rangeTime);
-
-  console.log("모달 event>>>", event);
   return (
     <Modal
       visible={openModal}
-      // className={className}
       title={!!isEdit ? "Edit Event" : "Add Event"}
       footer={null}
       closable={false}
     >
-      <Form
-        form={form}
-        layout={"vertical"}
-        onFinish={onFinish}
-        initialValues={{ id, title, className, rangeTime }}
-      >
+      <Form form={form} layout={"vertical"} onFinish={onFinish}>
         <Form.Item
           name="title"
           label="title"
@@ -55,25 +31,25 @@ function ModalComponent({
           <Input />
         </Form.Item>
         <Form.Item
-          name="className"
+          name="classNames"
           label="Select"
           rules={[{ required: true, message: "Please select your 물음표!" }]}
         >
           <Select placeholder="Please select a 물음표">
-            <Option value="bg-danger">Danger</Option>
-            <Option value="bg-success">Success</Option>
-            <Option value="bg-primary">Primary</Option>
-            <Option value="bg-info">Info</Option>
-            <Option value="bg-dark">Dark</Option>
-            <Option value="bg-warning">Warning</Option>
+            <Option value="bg-danger text-white">Danger</Option>
+            <Option value="bg-success text-white">Success</Option>
+            <Option value="bg-primary text-white">Primary</Option>
+            <Option value="bg-info text-white">Info</Option>
+            <Option value="bg-dark text-white">Dark</Option>
+            <Option value="bg-warning text-white">Warning</Option>
           </Select>
         </Form.Item>
         <Form.Item
-          name="rangeTime"
+          name="rangePiker"
           label="RangePicker[showTime]"
           {...rangeConfig}
         >
-          <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+          <RangePicker />
         </Form.Item>
         <Row>
           <Button onClick={toggle}>Cancel</Button>

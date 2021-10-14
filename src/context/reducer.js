@@ -1,3 +1,4 @@
+import moment from "moment";
 import {
   GET_EVENTS_SUCCESS,
   GET_EVENTS_FAIL,
@@ -11,6 +12,8 @@ import {
   DELETE_EVENT_FAIL,
 } from "./action";
 
+const dateFormat = "YYYY/MM/DD";
+
 const initialState = {
   events: [
     {
@@ -19,18 +22,32 @@ const initialState = {
       className: "bg-warning text-white",
       start: "2021-10-08T09:00:00.000Z",
       end: "2021-10-12T12:00:00.000Z",
+      rangePiker: [
+        moment("2021/10/01", dateFormat),
+        moment("2021/10/10", dateFormat),
+      ],
     },
     {
       id: 2,
       title: "Short Event",
       className: "bg-info text-white",
       start: "2021-10-11T09:00:00.000Z",
+      end: "2021-10-11T12:00:00.000Z",
+      rangePiker: [
+        moment("2021/10/11", dateFormat),
+        moment("2021/10/11", dateFormat),
+      ],
     },
     {
       id: 3,
       title: "Meeting",
       className: "bg-success text-white",
       start: "2021-10-14T02:30:00.000Z",
+      end: "2021-10-14T03:30:00.000Z",
+      rangePiker: [
+        moment("2021/10/14", dateFormat),
+        moment("2021/10/14", dateFormat),
+      ],
     },
     {
       id: 4,
@@ -38,6 +55,10 @@ const initialState = {
       className: "bg-danger text-white",
       start: "2021-10-14T03:00:00.000Z",
       end: "2021-10-14T05:00:00.000Z",
+      rangePiker: [
+        moment("2021/10/14", dateFormat),
+        moment("2021/10/14", dateFormat),
+      ],
     },
     {
       id: 5,
@@ -45,6 +66,10 @@ const initialState = {
       className: "bg-danger text-white",
       start: "2021-10-16T18:00:00.000Z",
       end: "2021-10-16T21:00:00.000Z",
+      rangePiker: [
+        moment("2021/10/16", dateFormat),
+        moment("2021/10/16", dateFormat),
+      ],
     },
   ],
   categories: [],
@@ -52,7 +77,6 @@ const initialState = {
 };
 
 const reducer = (state, action) => {
-  console.log("action.type>>>", action.type);
   switch (action.type) {
     case GET_EVENTS_SUCCESS:
       return {
@@ -81,8 +105,6 @@ const reducer = (state, action) => {
         error: action.payload,
       };
     case UPDATE_EVENT:
-      console.log("state.events>>>", state.events);
-      console.log("action.payload>>", action.payload);
       return {
         ...state,
         events: state.events.map((event) =>

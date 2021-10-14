@@ -1,55 +1,36 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import moment from "moment";
 import { isEmpty } from "lodash";
-import { Form, Input } from "antd";
+import { Form } from "antd";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import BootstrapTheme from "@fullcalendar/bootstrap";
 
-import { AvField, AvForm } from "availity-reactstrap-validation";
-import {
-  Button,
-  Card,
-  CardBody,
-  Col,
-  Container,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Row,
-} from "reactstrap";
 import "@fullcalendar/bootstrap/main.css";
 import ModalComponent from "./ModalComponent";
 import { useStateContext, useDispatchContext } from "../context/context";
 import { updateEvent, addNewEvent } from "../context/action";
 
+const dateFormat = "YYYY/MM/DD";
+
 function Calendar(props) {
   const [form] = Form.useForm();
 
   const dispatch = useDispatchContext();
-  const { events, error, categories } = useStateContext();
+  const { events } = useStateContext();
 
   let numRef = useRef(10);
   const [modal, setModal] = useState(false);
   const [event, setEvent] = useState({});
   const [isEdit, setIsEdit] = useState(false);
-  const [selectedDay, setSelectedDay] = useState(0);
-  const [deleteModal, setDeleteModal] = useState(false);
 
   useEffect(() => {
     if (!modal && !isEmpty(event) && !!isEdit) {
-      console.log("useEffet!!!");
       setTimeout(() => {
         setEvent({});
         setIsEdit(false);
-
-        form.setFieldsValue({
-          id: event.id,
-          title: "",
-          className: "",
-          start: "",
-          end: "",
-        });
+        form.resetFields();
       }, 500);
     }
   }, [modal, event]);
@@ -58,115 +39,118 @@ function Calendar(props) {
     setModal(!modal);
   };
 
-  const handleDateClick = (arg) => {
-    setSelectedDay(arg);
-    toggle();
-  };
-
   const handleEventClick = (arg) => {
     const event = arg.event;
-    const { id, title, start, startStr, end, endStr } = event;
+    const { id, title, start, startStr, end, endStr, classNames } = event;
+    const customDate = (str) => {
+      let result = "";
+      result = str.split("T")[0];
+      return result;
+    };
 
-    console.log("@@@@@@@@@@@event@@@@@@@@@@@@@@@@@", event);
-    console.log("start>>>", start);
-    console.log("end>>>", end);
     form.setFieldsValue({
-      id: event.id,
-      title: event.title,
-      className: event.classNames,
-      start: event.startStr,
-      end: event?.endStr || null,
-      // rangeTime: [start, end || start],
+      id,
+      title,
+      classNames: `${classNames[0]} text-white`,
+      start: startStr,
+      end: endStr,
+      rangePiker: [
+        moment(customDate(startStr), dateFormat),
+        moment(customDate(endStr), dateFormat),
+      ],
     });
 
     setEvent({
       id,
       title,
       start,
-      startStr,
       end: end || null,
-      endStr,
-      className: event.classNames,
+      classNames: `${classNames[0]} ${classNames[1]}`,
+      rangePiker: [
+        moment(customDate(startStr), dateFormat),
+        moment(customDate(endStr), dateFormat),
+      ],
     });
     setIsEdit(true);
     toggle();
   };
 
+  const handleDistinguis = (values, event) => {
+    const {
+      title: prevTitle,
+      classNames: prevClassNames,
+      start: prevStart,
+      end: prevEnd,
+    } = event;
+    const {
+      title: nextTitle,
+      classNames: nextClassNames,
+      rangePiker: nextDay,
+    } = values;
+
+    return (
+      prevTitle === nextTitle &&
+      prevClassNames === nextClassNames &&
+      String(prevStart).split(" ").slice(0, 4).join("") ===
+        String(nextDay[0]._d).split(" ").slice(0, 4).join("") &&
+      String(prevEnd).split(" ").slice(0, 4).join("") ===
+        String(nextDay[1]._d).split(" ").slice(0, 4).join("")
+    );
+  };
+
   const handleSubmit = (values) => {
+    const rangeValue = values["rangePiker"];
+
     if (isEdit) {
-      const rangeTimeValue = values["rangeTime"];
-      console.log("rangeTimeValue>>>", rangeTimeValue);
-      const events = {
-        id: event.id,
-        title: values.title,
-        className: `${values.className} text-white`,
-        start: rangeTimeValue[0].format("YYYY-MM-DDTHH:mm:ss"),
-        end: rangeTimeValue[1].format("YYYY-MM-DDTHH:mm:ss") || null,
-        // rangeTime: [
-        //   rangeTimeValue[0].format("YYYY-MM-DD HH:mm:ss"),
-        //   rangeTimeValue[1].format("YYYY-MM-DD HH:mm:ss"),
-        // ],
-      };
-
-      form.setFieldsValue({
-        id: event.id,
-        title: event.title,
-        className: event.className,
-        start: event.start,
-        end: event?.end,
-        // rangeTime: [
-        //   rangeTimeValue[0].format("YYYY-MM-DD HH:mm:ss"),
-        //   rangeTimeValue[1].format("YYYY-MM-DD HH:mm:ss"),
-        // ],
-      });
-
-      dispatch(updateEvent(events));
+      if (handleDistinguis(values, event)) {
+        alert("변경 사항을 확인해주세요.");
+      } else {
+        const events = {
+          id: event.id,
+          title: values.title,
+          classNames: `${values.classNames} text-white`,
+          start: values.rangePiker[0]._d,
+          end: values.rangePiker[1]._d,
+        };
+        dispatch(updateEvent(events));
+        toggle();
+      }
     } else {
-      const rangeTimeValue = values["rangeTime"];
       const events = {
         id: numRef,
         title: values.title,
-        className: `${values.className} text-white`,
-        start: rangeTimeValue[0].format("YYYY-MM-DDTHH:mm:ss"),
-        end: rangeTimeValue[1].format("YYYY-MM-DDTHH:mm:ss") || null,
-        // rangeTime: [
-        //   rangeTimeValue[0].format("YYYY-MM-DD HH:mm:ss"),
-        //   rangeTimeValue[1].format("YYYY-MM-DD HH:mm:ss"),
-        // ],
+        classNames: `${values.classNames} text-white`,
+        start: event.start,
+        end: event.end,
+        rangeValue: [
+          rangeValue[0].format("YYYY-MM-DD"),
+          rangeValue[1].format("YYYY-MM-DD"),
+        ],
       };
+      form.setFieldsValue({
+        id: event.id,
+        title: event.title,
+        classNames: `${values.classNames} text-white`,
+        start: event.start,
+        end: event?.end,
+        rangePiker: [
+          rangeValue[0].format("YYYY-MM-DD"),
+          rangeValue[1].format("YYYY-MM-DD"),
+        ],
+      });
 
       dispatch(addNewEvent(events));
       numRef += 1;
+      toggle();
     }
-    values = null;
-    toggle();
   };
 
   const handleResetEvent = () => {
-    console.log("handleResetEvent>>>>>>>>>.");
-    // setEvent({});
-
-    ////
+    form.setFieldsValue({});
   };
-
-  // useEffect(() => {
-  //   form.setFields({
-  //     title: 3,
-  //   });
-  // }, []);
 
   return (
     <>
-      <Form form={form}>
-        <Form.Item
-          name="title"
-          label="title"
-
-          // rules={[{ required: true, message: "Please select your title!" }]}
-        >
-          <Input />
-        </Form.Item>
-      </Form>
       <FullCalendar
         plugins={[dayGridPlugin, BootstrapTheme, interactionPlugin]}
         initialView="dayGridMonth"
@@ -176,7 +160,6 @@ function Calendar(props) {
         events={events}
         eventClick={handleEventClick}
         select={handleResetEvent}
-        dateClick={handleDateClick}
         editable={true} // 달력의 이벤트 수정
         droppable={true} // 다른 캘린더의 외부 드래그 가능한 요소 또는 이벤트를 캘린더에 놓을 수 있는지 여부를 결정
         selectable={true} // 사용자가 클릭하고 드래그하여 여러 날 또는 시간대를 강조 표시
