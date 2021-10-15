@@ -4,7 +4,8 @@ import { Modal, Button, Form, Select, Input, Row, DatePicker } from "antd";
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-function ModalComponent({ openModal, toggle, isEdit, onFinish, form }) {
+
+function ModalComponent({ openModal, toggle, isEdit, onFinish, form ,showPromiseConfirm}) {
   const rangeConfig = {
     rules: [
       {
@@ -15,10 +16,14 @@ function ModalComponent({ openModal, toggle, isEdit, onFinish, form }) {
     ],
   };
 
+
+
+
   return (
     <Modal
+
       visible={openModal}
-      title={!!isEdit ? "Edit Event" : "Add Event"}
+      title={!!isEdit ? "일정 수정" : "일정 추가"}
       footer={null}
       closable={false}
     >
@@ -53,76 +58,13 @@ function ModalComponent({ openModal, toggle, isEdit, onFinish, form }) {
         </Form.Item>
         <Row>
           <Button onClick={toggle}>Cancel</Button>
-          <Button>Delete</Button>
+          {!!isEdit&&<Button onClick={showPromiseConfirm}>Delete</Button>}
           <Form.Item>
             <Button htmlType={"submit"}>Save</Button>
           </Form.Item>
         </Row>
       </Form>
-      {/*<ModalHeader toggle={toggle} tag="h4">*/}
-      {/*  {!!isEdit ? "Edit Event" : "Add Event"}*/}
-      {/*</ModalHeader>*/}
-      {/*<ModalBody>*/}
-      {/*  <AvForm onValidSubmit={handleValidEventSubmit}>*/}
-      {/*    <Row form>*/}
-      {/*      <Col className="col-12 mb-3">*/}
-      {/*        <AvField*/}
-      {/*          name="title"*/}
-      {/*          label="Event Name"*/}
-      {/*          type="text"*/}
-      {/*          errorMessage="Invalid name"*/}
-      {/*          validate={{*/}
-      {/*            required: { value: true },*/}
-      {/*          }}*/}
-      {/*          value={event ? event.title : ""}*/}
-      {/*        />*/}
-      {/*      </Col>*/}
-      {/*      <Col className="col-12 mb-3">*/}
-      {/*        <AvField*/}
-      {/*          type="select"*/}
-      {/*          name="category"*/}
-      {/*          label="Select Category"*/}
-      {/*          validate={{*/}
-      {/*            required: { value: true },*/}
-      {/*          }}*/}
-      {/*          value={event ? event.category : "bg-primary"}*/}
-      {/*        >*/}
-      {/*          <option value="bg-danger">Danger</option>*/}
-      {/*          <option value="bg-success">Success</option>*/}
-      {/*          <option value="bg-primary">Primary</option>*/}
-      {/*          <option value="bg-info">Info</option>*/}
-      {/*          <option value="bg-dark">Dark</option>*/}
-      {/*          <option value="bg-warning">Warning</option>*/}
-      {/*        </AvField>*/}
-      {/*      </Col>*/}
-      {/*    </Row>*/}
-      {/*    <Row>*/}
-      {/*      <Col>*/}
-      {/*        <div className="text-end">*/}
-      {/*          <button*/}
-      {/*            type="button"*/}
-      {/*            className="btn btn-light me-2"*/}
-      {/*            onClick={toggle}*/}
-      {/*          >*/}
-      {/*            Close*/}
-      {/*          </button>*/}
-      {/*          {!!isEdit && (*/}
-      {/*            <button*/}
-      {/*              type="button"*/}
-      {/*              className="btn btn-danger me-2"*/}
-      {/*              onClick={() => setDeleteModal(true)}*/}
-      {/*            >*/}
-      {/*              Delete*/}
-      {/*            </button>*/}
-      {/*          )}*/}
-      {/*          <button type="submit" className="btn btn-success save-event">*/}
-      {/*            Save*/}
-      {/*          </button>*/}
-      {/*        </div>*/}
-      {/*      </Col>*/}
-      {/*    </Row>*/}
-      {/*  </AvForm>*/}
-      {/*</ModalBody>*/}
+
     </Modal>
   );
 }

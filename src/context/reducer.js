@@ -10,6 +10,7 @@ import {
   UPDATE_EVENT_FAIL,
   DELETE_EVENT_SUCCESS,
   DELETE_EVENT_FAIL,
+    DELETE_EVENT
 } from "./action";
 
 const dateFormat = "YYYY/MM/DD";
@@ -77,6 +78,7 @@ const initialState = {
 };
 
 const reducer = (state, action) => {
+
   switch (action.type) {
     case GET_EVENTS_SUCCESS:
       return {
@@ -130,8 +132,8 @@ const reducer = (state, action) => {
         ...state,
         error: action.payload,
       };
-
     case DELETE_EVENT_SUCCESS:
+      console.log('action.payload>>>',action.payload)
       return {
         ...state,
         events: state.events.filter(

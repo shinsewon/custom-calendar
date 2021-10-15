@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import moment from "moment";
 import { isEmpty } from "lodash";
-import { Form } from "antd";
+import { Form,Modal } from "antd";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -10,9 +10,11 @@ import BootstrapTheme from "@fullcalendar/bootstrap";
 import "@fullcalendar/bootstrap/main.css";
 import ModalComponent from "./ModalComponent";
 import { useStateContext, useDispatchContext } from "../context/context";
-import { updateEvent, addNewEvent } from "../context/action";
+import { updateEvent, addNewEvent,deleteEventSuccess } from "../context/action";
+import {ExclamationCircleOutlined} from '@ant-design/icons';
 
 const dateFormat = "YYYY/MM/DD";
+const { confirm } = Modal;
 
 function Calendar(props) {
   const [form] = Form.useForm();
@@ -100,7 +102,6 @@ function Calendar(props) {
 
   const handleSubmit = (values) => {
     const rangeValue = values["rangePiker"];
-
     if (isEdit) {
       if (handleDistinguis(values, event)) {
         alert("변경 사항을 확인해주세요.");
@@ -108,7 +109,7 @@ function Calendar(props) {
         const events = {
           id: event.id,
           title: values.title,
-          classNames: `${values.classNames} text-white`,
+          classNames: `${values.classNames}`,
           start: values.rangePiker[0]._d,
           end: values.rangePiker[1]._d,
         };
@@ -119,25 +120,14 @@ function Calendar(props) {
       const events = {
         id: numRef,
         title: values.title,
-        classNames: `${values.classNames} text-white`,
-        start: event.start,
-        end: event.end,
+        classNames: `${values.classNames}`,
+        start: values.rangePiker[0]._d,
+        end: values.rangePiker[1]._d,
         rangeValue: [
           rangeValue[0].format("YYYY-MM-DD"),
           rangeValue[1].format("YYYY-MM-DD"),
         ],
       };
-      form.setFieldsValue({
-        id: event.id,
-        title: event.title,
-        classNames: `${values.classNames} text-white`,
-        start: event.start,
-        end: event?.end,
-        rangePiker: [
-          rangeValue[0].format("YYYY-MM-DD"),
-          rangeValue[1].format("YYYY-MM-DD"),
-        ],
-      });
 
       dispatch(addNewEvent(events));
       numRef += 1;
@@ -147,10 +137,47 @@ function Calendar(props) {
 
   const handleResetEvent = () => {
     form.setFieldsValue({});
+    toggle();
   };
+
+
+
+  // 삭제 성공 모달
+  function success() {
+    Modal.success({
+      style:{top:200},
+      content: '정상적으로 수정되었습니다.',
+
+      onOk(){
+        dispatch( deleteEventSuccess(event))
+        toggle()
+      }
+    });
+  }
+
+//삭제 확인 버튼
+  function showPromiseConfirm() {
+    confirm({
+      style:{top:200},
+      title: '해당 일정을 삭제 하시겠습니까?',
+      icon: <ExclamationCircleOutlined />,
+
+      onOk() {
+        return new Promise((resolve, reject) => {
+          setTimeout(()=>{
+            resolve(success())
+          }, 1000);
+        }).catch(() => console.log('Oops errors!'));
+      },
+      onCancel() {},
+    });
+  }
+
+
 
   return (
     <>
+
       <FullCalendar
         plugins={[dayGridPlugin, BootstrapTheme, interactionPlugin]}
         initialView="dayGridMonth"
@@ -170,11 +197,13 @@ function Calendar(props) {
         }}
       />
       <ModalComponent
+          isEdit={isEdit}
         form={form}
         event={event}
         openModal={modal}
         toggle={toggle}
         onFinish={handleSubmit}
+          showPromiseConfirm={showPromiseConfirm}
       />
     </>
   );
