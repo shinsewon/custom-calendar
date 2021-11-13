@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import moment from "moment";
 import { isEmpty } from "lodash";
-import { Form,Modal } from "antd";
+import { Form, Modal } from "antd";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -10,8 +10,12 @@ import BootstrapTheme from "@fullcalendar/bootstrap";
 import "@fullcalendar/bootstrap/main.css";
 import ModalComponent from "./ModalComponent";
 import { useStateContext, useDispatchContext } from "../context/context";
-import { updateEvent, addNewEvent,deleteEventSuccess } from "../context/action";
-import {ExclamationCircleOutlined} from '@ant-design/icons';
+import {
+  updateEvent,
+  addNewEvent,
+  deleteEventSuccess,
+} from "../context/action";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const dateFormat = "YYYY/MM/DD";
 const { confirm } = Modal;
@@ -140,44 +144,39 @@ function Calendar(props) {
     toggle();
   };
 
-
-
   // 삭제 성공 모달
   function success() {
     Modal.success({
-      style:{top:200},
-      content: '정상적으로 수정되었습니다.',
+      style: { top: 200 },
+      content: "정상적으로 수정되었습니다.",
 
-      onOk(){
-        dispatch( deleteEventSuccess(event))
-        toggle()
-      }
+      onOk() {
+        dispatch(deleteEventSuccess(event));
+        toggle();
+      },
     });
   }
 
-//삭제 확인 버튼
+  //삭제 확인 버튼
   function showPromiseConfirm() {
     confirm({
-      style:{top:200},
-      title: '해당 일정을 삭제 하시겠습니까?',
+      style: { top: 200 },
+      title: "해당 일정을 삭제 하시겠습니까?",
       icon: <ExclamationCircleOutlined />,
 
       onOk() {
         return new Promise((resolve, reject) => {
-          setTimeout(()=>{
-            resolve(success())
+          setTimeout(() => {
+            resolve(success());
           }, 1000);
-        }).catch(() => console.log('Oops errors!'));
+        }).catch(() => console.log("Oops errors!"));
       },
       onCancel() {},
     });
   }
 
-
-
   return (
     <>
-
       <FullCalendar
         plugins={[dayGridPlugin, BootstrapTheme, interactionPlugin]}
         initialView="dayGridMonth"
@@ -197,13 +196,13 @@ function Calendar(props) {
         }}
       />
       <ModalComponent
-          isEdit={isEdit}
+        isEdit={isEdit}
         form={form}
         event={event}
         openModal={modal}
         toggle={toggle}
         onFinish={handleSubmit}
-          showPromiseConfirm={showPromiseConfirm}
+        showPromiseConfirm={showPromiseConfirm}
       />
     </>
   );

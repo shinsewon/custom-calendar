@@ -2,15 +2,12 @@ import moment from "moment";
 import {
   GET_EVENTS_SUCCESS,
   GET_EVENTS_FAIL,
-  ADD_EVENT_SUCCESS,
   ADD_EVENT_FAIL,
   ADD_NEW_EVENT,
-  UPDATE_EVENT_SUCCESS,
   UPDATE_EVENT,
   UPDATE_EVENT_FAIL,
   DELETE_EVENT_SUCCESS,
   DELETE_EVENT_FAIL,
-    DELETE_EVENT
 } from "./action";
 
 const dateFormat = "YYYY/MM/DD";
@@ -78,7 +75,6 @@ const initialState = {
 };
 
 const reducer = (state, action) => {
-
   switch (action.type) {
     case GET_EVENTS_SUCCESS:
       return {
@@ -96,11 +92,6 @@ const reducer = (state, action) => {
         ...state,
         events: [...state.events, action.payload],
       };
-    // case ADD_EVENT_SUCCESS:
-    //   return {
-    //     ...state,
-    //     events: [...state.events, action.payload],
-    //   };
     case ADD_EVENT_FAIL:
       return {
         ...state,
@@ -116,24 +107,13 @@ const reducer = (state, action) => {
         ),
       };
 
-    // case UPDATE_EVENT_SUCCESS:
-    //   console.log("state.events>>>", state.events);
-    //   return {
-    //     ...state,
-    //     events: state.events.map((event) =>
-    //       event.id.toString() === action.payload.id.toString()
-    //         ? { event, ...action.payload }
-    //         : event
-    //     ),
-    //   };
-
     case UPDATE_EVENT_FAIL:
       return {
         ...state,
         error: action.payload,
       };
     case DELETE_EVENT_SUCCESS:
-      console.log('action.payload>>>',action.payload)
+      console.log("action.payload>>>", action.payload);
       return {
         ...state,
         events: state.events.filter(
